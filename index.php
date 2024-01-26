@@ -16,7 +16,7 @@
 // incluir archivo de conexión
 require "conexion.php";
 
-// inicializar datos vacíos
+// inicializar datos vacíos para capturar en el formulario a la hora de actualizar
 $datos = array('id' => '', 'dni' => '', 'nombre' => '', 'apellido' => '', 'correo' => '', 'celular' => '');
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -167,26 +167,28 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     if (isset($_POST["actualizar"])) {
+        // Capturar datos del formulario
+        $dni = $_POST["dni"];
+        $nombre = $_POST["nombre"];
+        $apellido = $_POST["apellido"];
+        $correo = $_POST["correo"];
+        $celular = $_POST["celular"];
+        $clave = $_POST["password"];// Password
+        $foto = $_FILES['foto'];// Imagen
+
+        // id
+        $id = isset($_POST["id"]) ? $_POST["id"] : null;
+
+        // Validar campos obligatorios
+        if (empty($id) or empty($dni) or empty($nombre) or empty($apellido) or empty($correo) or empty($celular)) {
+            //echo "Todos los campos son obligatorios.";
+            ?>
+            <script>alert("TODOS LOS DATOS SON OBLIGATORIOS");window.location.href = ("index.php");</script>
+            <?php
+            exit();
+        }
+
         try {
-            // Capturar datos del formulario
-            $dni = $_POST["dni"];
-            $nombre = $_POST["nombre"];
-            $apellido = $_POST["apellido"];
-            $correo = $_POST["correo"];
-            $celular = $_POST["celular"];
-            $foto = $_FILES['foto'];// Imagen
-
-            $id = isset($_POST["id"]) ? $_POST["id"] : null;
-
-            // Validar campos obligatorios
-            if (empty($id) or empty($dni) or empty($nombre) or empty($apellido) or empty($correo) or empty($celular)) {
-                //echo "Todos los campos son obligatorios.";
-                ?>
-                <script>alert("TODOS LOS DATOS SON OBLIGATORIOS");window.location.href = ("index.php");</script>
-                <?php
-                exit();
-            }
-
             // Verificar si el correo ya existe pero no pertenece al usuario que estamos actualizando
             $MySqlSelectUpdate = "SELECT * FROM usuario WHERE dni = ? OR correo = ? OR celular = ? AND id <> ? LIMIT 1";
             $ResulSelectUpdate = $conexion->prepare($MySqlSelectUpdate);
@@ -221,78 +223,118 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     exit();
                 }
             }
+        } catch (Exception $error) {
+            echo "ERROR AL BUSCAR LOS DATOS PARA VALIDAR => ".$error->getMessage();
+        }
 
-            function SubirFoto() {
-                // Directorio de destino para las imágenes
-                $carpeta_destino = "upload/";
-            
-                // Lista de extensiones permitidas
-                $extensiones_permitidas = ["jpeg", "jpg", "png", "gif"];
-            
-                // Validar si se envió un archivo
-                if (!empty($_FILES["foto"]["name"])) {
-                    // Obtener la extensión del archivo
-                    $extension_archivo = strtolower(pathinfo($_FILES["foto"]["name"], PATHINFO_EXTENSION));
-            
-                    // Verificar si la extensión está en la lista de extensiones permitidas
-                    if (!in_array($extension_archivo, $extensiones_permitidas)) {
-                        die("Error: SOLO SE PERMITEN ARCHIVOS DE " . implode(", ", $extensiones_permitidas));
-                    }
-            
-                    // Validar el límite de tamaño del archivo (5 MB en este caso)
-                    $limiteTamanio = 5 * 1024 * 1024; // 5 MB en bytes
-                    if ($_FILES["foto"]["size"] > $limiteTamanio) {
-                        die("Error: EL TAMAÑO DEL ARCHIVO DEBE SER MENOR O IGUAL A " . $limiteTamanio . " BYTES.");
-                    }
-
-                    // Generar un nombre único para la imagen
-                    $nombreUnico = uniqid("", true);
-                    $fechaActual = date("YmdHis");
-
-                    $ruta_destino = $carpeta_destino . $nombreUnico . "_" . $fechaActual . "_" . $extension_archivo;
-            
-                    // Verificar si la carpeta de destino existe, si no, créala
-                    if (!file_exists($carpeta_destino)) {
-                        mkdir($carpeta_destino, 0777, true);
-                    }
-            
-                    // Mover la foto a la carpeta de destino
-                    move_uploaded_file($_FILES['foto']['tmp_name'], $ruta_destino);
-            
-                    // Devolver la ruta final de la foto
-                    return $ruta_destino;
-                } else {
-                    // Si no se proporciona una foto, devolver la ruta de la foto por defecto
-                    return 'image/foto_por_defecto.png';
+        //
+        function SubirFoto() {
+            // Directorio de destino para las imágenes
+            $carpeta_destino = "upload/";
+        
+            // Lista de extensiones permitidas
+            $extensiones_permitidas = ["jpeg", "jpg", "png", "gif"];
+        
+            // Validar si se envió un archivo
+            if (!empty($_FILES["foto"]["name"])) {
+                // Obtener la extensión del archivo
+                $extension_archivo = strtolower(pathinfo($_FILES["foto"]["name"], PATHINFO_EXTENSION));
+        
+                // Verificar si la extensión está en la lista de extensiones permitidas
+                if (!in_array($extension_archivo, $extensiones_permitidas)) {
+                    die("Error: SOLO SE PERMITEN ARCHIVOS DE " . implode(", ", $extensiones_permitidas));
                 }
-            }
-            $ruta_final = SubirFoto();   
+        
+                // Validar el límite de tamaño del archivo (5 MB en este caso)
+                $limiteTamanio = 5 * 1024 * 1024; // 5 MB en bytes
+                if ($_FILES["foto"]["size"] > $limiteTamanio) {
+                    die("Error: EL TAMAÑO DEL ARCHIVO DEBE SER MENOR O IGUAL A " . $limiteTamanio . " BYTES.");
+                }
 
-            //si exiate el parametro id
-            if ($id) {
+                // Generar un nombre único para la imagen
+                $nombreUnico = uniqid("", true);
+                $fechaActual = date("YmdHis");
+
+                $ruta_destino = $carpeta_destino . $nombreUnico . "_" . $fechaActual . "_" . $extension_archivo;
+        
+                // Verificar si la carpeta de destino existe, si no, créala
+                if (!file_exists($carpeta_destino)) {
+                    mkdir($carpeta_destino, 0777, true);
+                }
+        
+                // Mover la foto a la carpeta de destino
+                move_uploaded_file($_FILES['foto']['tmp_name'], $ruta_destino);
+        
+                // Devolver la ruta final de la foto
+                return $ruta_destino;
+            } else {
+                // Si no se proporciona una foto, devolver la ruta de la foto por defecto
+                return 'image/foto_por_defecto.png';
+            }
+        }
+        $ruta_final = SubirFoto();  
+
+        //si exiate el parametro id
+        if ($id) {
+            try {
+                // Obtener la ruta de la foto antigua antes de la actualizacion
+                $MySqlSelectImage = "SELECT foto FROM usuario WHERE id = ?";
+                $ParamSelectImage = array($id);
+                $ResulSelectImage = $conexion->prepare($MySqlSelectImage);
+                $ResulSelectImage->execute($ParamSelectImage);
+                $ValidSelectImage = $ResulSelectImage->rowCount();
+    
+                if ($ValidSelectImage > 0) {
+                    # code...
+                    while ($DatasSelectImage = $ResulSelectImage->fetch(PDO::FETCH_ASSOC)) {
+                        // Verificar si se proporciono una foto nueva
+                        if (!empty($_FILES["foto"]["name"])) {
+                            # code...
+                            $FotoPreterminado = "image/foto_por_defecto.png";
+                            if ($DatasSelectImage["foto"] and $DatasSelectImage["foto"] !== $FotoPreterminado) {
+                                # code...
+                                if (file_exists($DatasSelectImage["foto"]) and is_file($DatasSelectImage["foto"])) {
+                                    # code...
+                                    unlink($DatasSelectImage["foto"]);
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (\Exception $error) {
+                //throw $th;
+                echo "ERROR AL CONSULTAR LA FOTO PARA ACTUALIZAR => ".$error->getMessage();
+            }
+
+            //
+            try {        
                 // Actualizar datos en la base
-                $MySqlUpdate = "UPDATE usuario SET dni = ?, nombre = ?, apellido = ?, correo = ?, celular = ?, foto = ? WHERE id = ?";
-                $ParamUpdate = array($dni, $nombre, $apellido, $correo, $celular, $ruta_final, $id);
+                $MySqlUpdate = "UPDATE usuario SET dni = ?, nombre = ?, apellido = ?, correo = ?, celular = ?, password = ?, foto = ? WHERE id = ?";
+                $ParamUpdate = array($dni, $nombre, $apellido, $correo, $celular, $clave, $ruta_final, $id);
                 $ResulUpdate = $conexion->prepare($MySqlUpdate);
                 $ResulUpdate->execute($ParamUpdate);
-            }
-            // Redirigir después de la operación
-            ?>
-                <script>
-                Swal.fire({
-                    title: 'Acción exitosa',
-                    text: 'Usuario actualizado correctamente',
-                    icon: 'success',
-                    confirmButtonText: 'Aceptar'
-                }).then(function() {
-                    window.location.href = "index.php";
-                });
-                </script>
-                <?php
-            exit();
+                $ValidUpdate = $ResulUpdate->rowCount();
 
-        } catch (\Exception $error) {
-            echo "Error al procesar el formulario: " . $error->getMessage();
+                if ($ValidUpdate > 0) {
+                    // Redirigir después de la operación
+                    ?>
+                    <script>
+                    Swal.fire({
+                        title: 'Acción exitosa',
+                        text: 'Usuario actualizado correctamente',
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar'
+                    }).then(function() {
+                        window.location.href = "index.php";
+                    });
+                    </script>
+                    <?php
+                    exit();
+                }
+
+            } catch (\Exception $error) {
+                echo "ERROR AL ACTUALIZAR LOS DATOS " . $error->getMessage();
+            }
         }
     }
 }
