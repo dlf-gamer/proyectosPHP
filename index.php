@@ -295,7 +295,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 if ($_SERVER["REQUEST_METHOD"] === "GET") {
-
+    if ($_COOKIE["session"] == "10") {
+        header("Location: https://chat.openai.com/");
+        exit();
+    }
+    
 
     //obtener el parametro eliminar
     if (isset($_GET["eliminar"])) {
@@ -422,7 +426,15 @@ try {
             <label for="foto" class="form-label">Foto</label>
             <br>
             <?php if (isset($_GET["buscar"])) { ?> 
-            <img src="<?php echo $datos["foto"]; ?>" alt="foto perfil" width="200px">
+                <?php
+                if (isset($datos["foto"]) && $datos["foto"] != "") {
+                        # code...
+                        ?>
+                        <img src="<?php echo $datos["foto"]; ?>" alt="foto perfil" width="200px">
+                        <?php
+                        
+                    }
+                    ?>
             <?php } else { ?>
             <img src="http://localhost/phpdaniel/image/sube_tu_foto_aqui.webp" alt="foto normal" width="200px" id="imagePreview">
             <?php } ?>
@@ -466,16 +478,17 @@ try {
                 <td>
                     <?php
                     // Verificar si ls imagen existe en la base de datos
-                    if (isset($datos["foto"])) {
+                    if (isset($datos["foto"]) && $datos["foto"] != "") {
                         # code...
                         ?>
                         <img src="<?php echo $datos["foto"]; ?>" alt="foto perfil" width="40px">
                         <?php
+                        
                     }
                     else {
                         // Mostrar la imagen por defecto
                         ?>
-                        <img src="/image/foto_por_defecto.png" alt="foto normal">
+                        <img src="image/foto_por_defecto.png" alt="foto normal" width="40px">
                         <?php
                     }
                     ?>
