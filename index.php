@@ -16,6 +16,9 @@
 // incluir archivo de conexión
 require "conexion.php";
 
+// inicializar datos vacíos
+$datos = array('id' => '', 'dni' => '', 'nombre' => '', 'apellido' => '', 'correo' => '', 'celular' => '');
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     //
     if (isset($_POST["registrar"])) {
@@ -386,9 +389,6 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
         }
     }
 }
-
-// inicializar datos vacíos
-$datos = array('id' => '', 'dni' => '', 'nombre' => '', 'apellido' => '', 'correo' => '', 'celular' => '');
 
 // Consultar la base de datos
 try {
