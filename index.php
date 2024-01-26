@@ -16,10 +16,8 @@
 // incluir archivo de conexión
 require "conexion.php";
 
-// inicializar datos vacíos
-$datos = array('id' => '', 'dni' => '', 'nombre' => '', 'apellido' => '', 'correo' => '', 'celular' => '');
-
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    //
     if (isset($_POST["registrar"])) {
         // capturar datos del formulario
         $dni = $_POST["dni"];
@@ -32,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         // Generar una contraseña aleatoria
         function GeneradorPassword($longitud = 8) {
-            $caracteresPermitidos = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_';
+            $caracteresPermitidos = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_";
             $password = '';
             $longitudCaracteresPermitidos = strlen($caracteresPermitidos) - 1;
     
@@ -50,13 +48,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $encriptar = password_hash($clave, PASSWORD_DEFAULT);
 
         // Validar campos obligatorios
-        /* if (empty($dni) or empty($nombre) or empty($apellido) or empty($correo) or empty($celular) or empty($clave)) {
+        if (empty($dni) or empty($nombre) or empty($apellido) or empty($correo) or empty($celular) or empty($clave)) {
             //echo "Todos los campos son obligatorios.";
             ?>
             <script>alert("TODOS LOS DATOS SON OBLIGATORIOS");window.location.href = ("index.php");</script>
             <?php
             exit();
-        } */
+        }
 
         // Verificar si el correo y celular ya existe
         $MySqlSelectInsert = "SELECT * FROM usuario WHERE dni = ? OR correo = ? OR celular = ? LIMIT 1";
@@ -94,13 +92,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         function SubirFoto() {
             // Directorio de destino para las imágenes
-            $carpeta_destino = 'upload/';
+            $carpeta_destino = "upload/";
         
             // Lista de extensiones permitidas
             $extensiones_permitidas = ["jpeg", "jpg", "png", "gif"];
         
             // Validar si se envió un archivo
-            if (isset($_FILES['foto'])) {
+            if (!empty($_FILES["foto"]["name"])) {
                 // Obtener la extensión del archivo
                 $extension_archivo = strtolower(pathinfo($_FILES["foto"]["name"], PATHINFO_EXTENSION));
         
@@ -133,10 +131,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 return $ruta_destino;
             } else {
                 // Si no se proporciona una foto, devolver la ruta de la foto por defecto
-                return 'image/foto_por_defecto.jpg';
+                return 'image/foto_por_defecto.png';
             }
         }
-        $ruta_final = SubirFoto();   
+        $ruta_final = SubirFoto(); 
 
         try {
             //
@@ -220,15 +218,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     exit();
                 }
             }
+
             function SubirFoto() {
                 // Directorio de destino para las imágenes
-                $carpeta_destino = 'upload/';
+                $carpeta_destino = "upload/";
             
                 // Lista de extensiones permitidas
                 $extensiones_permitidas = ["jpeg", "jpg", "png", "gif"];
             
                 // Validar si se envió un archivo
-                if (isset($_FILES['foto'])) {
+                if (!empty($_FILES["foto"]["name"])) {
                     // Obtener la extensión del archivo
                     $extension_archivo = strtolower(pathinfo($_FILES["foto"]["name"], PATHINFO_EXTENSION));
             
@@ -242,11 +241,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     if ($_FILES["foto"]["size"] > $limiteTamanio) {
                         die("Error: EL TAMAÑO DEL ARCHIVO DEBE SER MENOR O IGUAL A " . $limiteTamanio . " BYTES.");
                     }
-    
+
                     // Generar un nombre único para la imagen
                     $nombreUnico = uniqid("", true);
                     $fechaActual = date("YmdHis");
-    
+
                     $ruta_destino = $carpeta_destino . $nombreUnico . "_" . $fechaActual . "_" . $extension_archivo;
             
                     // Verificar si la carpeta de destino existe, si no, créala
@@ -261,7 +260,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     return $ruta_destino;
                 } else {
                     // Si no se proporciona una foto, devolver la ruta de la foto por defecto
-                    return 'image/foto_por_defecto.jpg';
+                    return 'image/foto_por_defecto.png';
                 }
             }
             $ruta_final = SubirFoto();   
@@ -269,7 +268,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             //si exiate el parametro id
             if ($id) {
                 // Actualizar datos en la base
-                $MySqlUpdate = "UPDATE usuario SET dni = ?, nombre = ?, apellido = ?, correo = ?, celular = ?, foto=? WHERE id = ?";
+                $MySqlUpdate = "UPDATE usuario SET dni = ?, nombre = ?, apellido = ?, correo = ?, celular = ?, foto = ? WHERE id = ?";
                 $ParamUpdate = array($dni, $nombre, $apellido, $correo, $celular, $ruta_final, $id);
                 $ResulUpdate = $conexion->prepare($MySqlUpdate);
                 $ResulUpdate->execute($ParamUpdate);
@@ -294,38 +293,65 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
 }
-if ($_SERVER["REQUEST_METHOD"] === "GET") {
-    if ($_COOKIE["session"] == "10") {
-        header("Location: https://chat.openai.com/");
-        exit();
-    }
-    
 
+//
+if ($_SERVER["REQUEST_METHOD"] === "GET") {
     //obtener el parametro eliminar
     if (isset($_GET["eliminar"])) {
         # code...
         $eliminar = $_GET["eliminar"];
         //
         if ($eliminar > 0) {
+            //
+            try {
+                //code...
+                $MySqlSearchDelete = "SELECT foto FROM usuario WHERE id = ?";
+                $ResulSearchDelete = $conexion->prepare($MySqlSearchDelete);
+                $ParamSearchDelete = array($eliminar);
+                $ResulSearchDelete->execute($ParamSearchDelete);
+                $ValidSearchDelete = $ResulSearchDelete->rowCount();
+
+                if ($ValidSearchDelete > 0) {
+                    # code...
+                    while ($DatossFotosDelete = $ResulSearchDelete->fetch(PDO::FETCH_ASSOC)) {
+                        # code...
+                        $FotoPreterminado = "image/foto_por_defecto.png";
+                        if (!empty($DatossFotosDelete["foto"]) and $DatossFotosDelete["foto"] !== $FotoPreterminado) {
+                            # code...
+                            if (file_exists($DatossFotosDelete["foto"])) {
+                                # code...
+                                unlink($DatossFotosDelete["foto"]);
+                            }
+                        }
+                    }
+                }
+            } catch (\Exception $error) {
+                //throw $th;
+                echo "ERROR AL CONSULTAR LA FOTO => ".$error->getMessage();
+            }
+
             try {
                 $MySqlDelete = "DELETE FROM usuario WHERE id = ?";
                 $ParamDelete = array($eliminar);
                 $ResulDelete = $conexion->prepare($MySqlDelete);
                 $ResulDelete->execute($ParamDelete);
+                $ValidDelete = $ResulDelete->rowCount();
 
-                ?>
-                <script>
-                Swal.fire({
-                    title: 'Acción exitosa',
-                    text: 'Usuario eliminado correctamente',
-                    icon: 'success',
-                    confirmButtonText: 'Aceptar'
-                }).then(function() {
-                    window.location.href = "index.php";
-                });
-                </script>
-                <?php
-
+                if ($ValidDelete > 0) {
+                    # code...
+                    ?>
+                    <script>
+                        Swal.fire({
+                            title: 'Acción exitosa',
+                            text: 'Usuario eliminado correctamente',
+                            icon: 'success',
+                            confirmButtonText: 'Aceptar'
+                        }).then(function() {
+                            window.location.href = "index.php";
+                        });
+                    </script>
+                    <?php
+                }
             } catch (\Exception $error) {
                 echo "Error al eliminar: " . $error->getMessage();
             }
@@ -360,6 +386,9 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
         }
     }
 }
+
+// inicializar datos vacíos
+$datos = array('id' => '', 'dni' => '', 'nombre' => '', 'apellido' => '', 'correo' => '', 'celular' => '');
 
 // Consultar la base de datos
 try {
@@ -428,15 +457,14 @@ try {
             <?php if (isset($_GET["buscar"])) { ?> 
                 <?php
                 if (isset($datos["foto"]) && $datos["foto"] != "") {
-                        # code...
-                        ?>
-                        <img src="<?php echo $datos["foto"]; ?>" alt="foto perfil" width="200px">
-                        <?php
-                        
-                    }
+                    # code...
                     ?>
+                    <img src="<?php echo $datos["foto"]; ?>" alt="foto perfil" width="100px">
+                    <?php    
+                }
+                ?>
             <?php } else { ?>
-            <img src="http://localhost/phpdaniel/image/sube_tu_foto_aqui.webp" alt="foto normal" width="200px" id="imagePreview">
+            <img src="image/sube_tu_foto_aqui.webp" alt="foto normal" width="100px" id="imagePreview">
             <?php } ?>
             <br>
             <input type="file" class="form-control" name="foto" id="foto" accept="image/*" value="">
@@ -478,12 +506,11 @@ try {
                 <td>
                     <?php
                     // Verificar si ls imagen existe en la base de datos
-                    if (isset($datos["foto"]) && $datos["foto"] != "") {
+                    if (isset($datos["foto"]) and $datos["foto"] != "") {
                         # code...
                         ?>
                         <img src="<?php echo $datos["foto"]; ?>" alt="foto perfil" width="40px">
                         <?php
-                        
                     }
                     else {
                         // Mostrar la imagen por defecto
@@ -509,8 +536,8 @@ try {
 </div>
 
 </body>
-<script>
 
+<script>
     document.getElementById('foto').addEventListener('change', function(event) {
         var file = event.target.files[0];
         var reader = new FileReader();
@@ -525,4 +552,5 @@ try {
     });
 
 </script>
+
 </html>
