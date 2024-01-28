@@ -194,11 +194,30 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $apellido = $_POST["apellido"];
         $correo = $_POST["correo"];
         $celular = $_POST["celular"];
-        $clave = $_POST["password"];// Password
+        $clave = $_POST["password"];// Contraseña
         $foto = $_FILES['foto'];// Imagen
 
         // id
         $id = isset($_POST["id"]) ? $_POST["id"] : null;
+
+        // Generar una contraseña aleatoria
+        function GeneradorPassword($longitud = 8) {
+            $caracteresPermitidos = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_";
+            $password = '';
+            $longitudCaracteresPermitidos = strlen($caracteresPermitidos) - 1;
+    
+            for ($i = 0; $i < $longitud; $i++) {
+                $indiceAleatorio = mt_rand(0, $longitudCaracteresPermitidos);
+                $password .= $caracteresPermitidos[$indiceAleatorio];
+            }
+            return $password;
+        }
+
+        // Generar una contraseña aleatoria solo si no se proporcionó una nueva
+        $clave = empty($clave) ? GeneradorPassword() : null;
+
+        // Hash de la contraseña para elmacenarla de manera asegura
+        $encriptar = password_hash($clave, PASSWORD_DEFAULT);
 
         // Validar campos obligatorios
         if (empty($id) or empty($dni) or empty($nombre) or empty($apellido) or empty($correo) or empty($celular)) {
@@ -209,6 +228,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             exit();
         }
 
+        //
         try {
             // Verificar si el correo ya existe pero no pertenece al usuario que estamos actualizando
             $MySqlSelectUpdate = "SELECT * FROM usuario WHERE dni = ? OR correo = ? OR celular = ? AND id <> ? LIMIT 1";
@@ -293,7 +313,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 return 'image/foto_por_defecto.png';
             }
         }
-        $ruta_final = SubirFoto();  
+        // Subir nueva foto si se proporciona
+        $ruta_final = empty($ruta_final) ? SubirFoto() : null;  
 
         //si exiate el parametro id
         if ($id) {
@@ -331,7 +352,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             try {        
                 // Actualizar datos en la base
                 $MySqlUpdate = "UPDATE usuario SET dni = ?, nombre = ?, apellido = ?, correo = ?, celular = ?, password = ?, foto = ? WHERE id = ?";
-                $ParamUpdate = array($dni, $nombre, $apellido, $correo, $celular, $clave, $ruta_final, $id);
+                $ParamUpdate = array($dni, $nombre, $apellido, $correo, $celular, $encriptar, $ruta_final, $id);
                 $ResulUpdate = $conexion->prepare($MySqlUpdate);
                 $ResulUpdate->execute($ParamUpdate);
                 $ValidUpdate = $ResulUpdate->rowCount();
@@ -587,7 +608,7 @@ try {
                     # code...
                     ?>
                     <div class="contenedor-imagen">
-                        <img src="<?php echo $datos["foto"]; ?>" alt="foto perfil" width="100px" id="previsualizacion">
+                        <img src="<?php echo $datos["foto"]; ?>" alt="foto perfil" width="150px" id="previsualizacion">
                         <?php
                         if (!empty($datos["foto"]) and $datos["foto"] != "image/foto_por_defecto.png") {
                             # code...
@@ -694,7 +715,7 @@ try {
             var lector = new FileReader();
 
             lector.onload = function (e) {
-                previsualizacion.innerHTML = '<img src="' + e.target.result + '" alt="Vista previa de la foto" style="max-width: 200px; max-height: 200px;" />';
+                previsualizacion.innerHTML = '<img src="' + e.target.result + '" alt="Vista previa de la foto" style="max-width: 150px; max-height: 150px;" />';
                 quitarFotoBtn.style.display = 'block'; // Mostrar el botón de quitar foto
             };
 
@@ -711,6 +732,17 @@ try {
         document.getElementById('previsualizacion').innerHTML = '';
         document.getElementById('quitarFotoBtn').style.display = 'none'; // Ocultar el botón de quitar foto
     }
+
+    document.getElementById('imagenInput').addEventListener('change', function () {
+        var archivo = this.files[0];
+        if (archivo) {
+            var lector = new FileReader();
+            lector.onload = function (e) {
+                document.getElementById('imagenPrevia').src = e.target.result;
+            };
+            lector.readAsDataURL(archivo);
+        }
+    });
 </script>
 
 </html>
