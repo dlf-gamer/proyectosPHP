@@ -635,7 +635,7 @@ try {
                 </div>
             </div>
             <?php } ?>
-            <input type="file" name="foto" id="foto" accept="image/*" onchange="previsualizarFoto(this);">
+            <input class="form-control" type="file" name="foto" id="foto" accept="image/*" onchange="previsualizarFoto(this);">
             <!-- <input type="file" class="form-control" name="foto" id="foto" accept="image/*" value=""> -->
         </div>
 
