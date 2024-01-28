@@ -587,29 +587,35 @@ try {
                     # code...
                     ?>
                     <div class="contenedor-imagen">
-                        <img src="<?php echo $datos["foto"]; ?>" alt="foto perfil" width="200px" id="imagePreview">
-                        <div class="overlay">
-                            <a onclick="window.location.href='?eliminarImagen=<?php echo $datos['id']; ?>';">
-                                <button class="btn btn-danger">Eliminar</button>
-                            </a>
-                        </div>
+                        <img src="<?php echo $datos["foto"]; ?>" alt="foto perfil" width="100px" id="previsualizacion">
+                        <?php
+                        if (!empty($datos["foto"]) and $datos["foto"] != "image/foto_por_defecto.png") {
+                            # code...
+                            ?>
+                            <div class="overlay">
+                                <a onclick="window.location.href='?eliminarImagen=<?php echo $datos['id']; ?>';">
+                                    <button class="btn btn-danger">Eliminar</button>
+                                </a>
+                            </div>
+                            <?php
+                        }
+                        ?>
                     </div>
                     <?php    
                 }
                 ?>
             <?php } else { ?>
-                <!-- Contenedor para la previsualización de la foto -->
-            <img src="image/sube_tu_foto_aqui.webp" alt="foto preterminado" width="100px" id="imagePreview">
+            <!-- Contenedor para la previsualización de la foto -->
+            <div class="contenedor-imagen">
+                <!-- <img src="image/sube_tu_foto_aqui.jpg" id="imagePreview" width="150px" alt="" > -->
+                <div id="previsualizacion"></div>
+                <div class="overlay">
+                    <button type="button" id="quitarFotoBtn" class="btn btn-danger" onclick="quitarFoto()" style="display: none;">Quitar</button>
+                </div>
+            </div>
             <?php } ?>
-            <br>
-            <input type="file" class="form-control" name="foto" id="foto" accept="image/*" value="">
-            <button type="button" class="btn btn-danger" onclick="desSelecionarImagen()">Des-seleccionar imagen</button>
-            <script>
-                function desSelecionarImagen(){
-                    document.getElementById("foto").value = "";
-                    document.getElementById("imagePreview").src = "image/sube_tu_foto_aqui.webp";
-                }
-            </script>
+            <input type="file" name="foto" id="foto" accept="image/*" onchange="previsualizarFoto(this);">
+            <!-- <input type="file" class="form-control" name="foto" id="foto" accept="image/*" value=""> -->
         </div>
 
         <div class="col-12">
@@ -680,19 +686,31 @@ try {
 </body>
 
 <script>
-    document.getElementById('foto').addEventListener('change', function(event) {
-        var file = event.target.files[0];
-        var reader = new FileReader();
-    
-        reader.onload = function(e) {
-            // Asignar la imagen cargada como fuente para la vista previa
-            document.getElementById('imagePreview').src = e.target.result;
-        };
-    
-        // Leer el archivo seleccionado
-        reader.readAsDataURL(file);
-    });
+    function previsualizarFoto(input) {
+        var previsualizacion = document.getElementById('previsualizacion');
+        var quitarFotoBtn = document.getElementById('quitarFotoBtn');
 
+        if (input.files && input.files[0]) {
+            var lector = new FileReader();
+
+            lector.onload = function (e) {
+                previsualizacion.innerHTML = '<img src="' + e.target.result + '" alt="Vista previa de la foto" style="max-width: 200px; max-height: 200px;" />';
+                quitarFotoBtn.style.display = 'block'; // Mostrar el botón de quitar foto
+            };
+
+            lector.readAsDataURL(input.files[0]);
+        } else {
+            previsualizacion.innerHTML = '';
+            quitarFotoBtn.style.display = 'none'; // Ocultar el botón de quitar foto
+        }
+    }
+
+    function quitarFoto() {
+        // Limpiar el campo de archivo y la previsualización
+        document.getElementById('foto').value = '';
+        document.getElementById('previsualizacion').innerHTML = '';
+        document.getElementById('quitarFotoBtn').style.display = 'none'; // Ocultar el botón de quitar foto
+    }
 </script>
 
 </html>
