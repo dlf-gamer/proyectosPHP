@@ -506,7 +506,8 @@ try {
                 }
                 ?>
             <?php } else { ?>
-            <img src="image/sube_tu_foto_aqui.webp" alt="foto normal" width="100px" id="imagePreview">
+                <!-- Contenedor para la previsualización de la foto -->
+            <img src="image/sube_tu_foto_aqui.webp" alt="foto preterminado" width="100px" id="imagePreview">
             <?php } ?>
             <br>
             <input type="file" class="form-control" name="foto" id="foto" accept="image/*" value="">
