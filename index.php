@@ -608,7 +608,7 @@ try {
                     # code...
                     ?>
                     <div class="contenedor-imagen">
-                        <img src="<?php echo $datos["foto"]; ?>" alt="foto perfil" width="150px" id="previsualizacion">
+                        <img src="<?php echo $datos["foto"]; ?>" alt="foto perfil" width="150px" id="imagenInput">
                         <?php
                         if (!empty($datos["foto"]) and $datos["foto"] != "image/foto_por_defecto.png") {
                             # code...
