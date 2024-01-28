@@ -733,12 +733,12 @@ try {
         document.getElementById('quitarFotoBtn').style.display = 'none'; // Ocultar el botón de quitar foto
     }
 
-    document.getElementById('imagenInput').addEventListener('change', function () {
+    document.getElementById('foto').addEventListener('change', function () {
         var archivo = this.files[0];
         if (archivo) {
             var lector = new FileReader();
             lector.onload = function (e) {
-                document.getElementById('imagenPrevia').src = e.target.result;
+                document.getElementById('previsualizacion').src = e.target.result;
             };
             lector.readAsDataURL(archivo);
         }
