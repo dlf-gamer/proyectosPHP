@@ -189,11 +189,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if (isset($_POST["actualizar"])) {
         // Capturar datos del formulario
-        $dni = $_POST["dni"];
-        $nombre = $_POST["nombre"];
-        $apellido = $_POST["apellido"];
-        $correo = $_POST["correo"];
-        $celular = $_POST["celular"];
+        $dni = $_POST["dni"] ? $_POST["dni"] : null;
+        $nombre = $_POST["nombre"] ? $_POST["nombre"] : null;
+        $apellido = $_POST["apellido"] ? $_POST["apellido"] : null;
+        $correo = $_POST["correo"] ? $_POST["correo"] : null;
+        $celular = $_POST["celular"] ? $_POST["celular"] : null;
         $clave = $_POST["password"];// Contraseña
         $foto = $_FILES['foto'];// Imagen
 
