@@ -604,7 +604,7 @@ try {
             <br>
             <?php if (isset($_GET["buscar"])) { ?> 
                 <?php
-                if (isset($datos["foto"]) && $datos["foto"] != "") {
+                if (isset($datos["foto"]) and $datos["foto"] != "") {
                     # code...
                     ?>
                     <div class="contenedor-imagen">
