@@ -10,6 +10,27 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
+<style>
+    /* inicio código css para que el botón aparezca sobre la imagen  */
+    .contenedor-imagen {
+        position: relative;
+        display: inline-block;
+    }
+
+    .overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+    }
+
+    .contenedor-imagen:hover .overlay {
+        opacity: 1;
+    }
+    /* fin código css para que el botón aparezca sobre la imagen  */
+</style>
 
 <?php
 
@@ -341,6 +362,69 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 //
 if ($_SERVER["REQUEST_METHOD"] === "GET") {
+
+    //obtener el parametro eliminarImagen para ejecutar el código que solo elimina la imagen
+    if (isset($_GET["eliminarImagen"])) {
+
+        $eliminar = $_GET["eliminarImagen"];
+
+        if ($eliminar) {
+            try {
+
+                $MySqlSearchDelete = "SELECT foto FROM usuario WHERE id = ?";
+                $ResulSearchDelete = $conexion->prepare($MySqlSearchDelete);
+                $ParamSearchDelete = array($eliminar);
+                $ResulSearchDelete->execute($ParamSearchDelete);
+                $ValidSearchDelete = $ResulSearchDelete->rowCount();
+
+                if ($ValidSearchDelete > 0) {
+    
+                    while ($DatossFotosDelete = $ResulSearchDelete->fetch(PDO::FETCH_ASSOC)) {
+        
+                        $FotoPreterminado = "image/foto_por_defecto.png";
+                        if (!empty($DatossFotosDelete["foto"]) and $DatossFotosDelete["foto"] !== $FotoPreterminado) {
+            
+                            if (file_exists($DatossFotosDelete["foto"])) {
+                
+                                unlink($DatossFotosDelete["foto"]);
+                            }
+                        }
+                    }
+                }
+            } catch (\Exception $error) {
+
+                echo "ERROR AL CONSULTAR LA FOTO => ".$error->getMessage();
+            }
+
+            try {
+                $MySqlUpdate = "UPDATE usuario SET foto = ? WHERE id = ?";
+                $ParamUpdate = array($FotoPreterminado, $eliminar);
+                $ResulUpdate = $conexion->prepare($MySqlUpdate);
+                $ResulUpdate->execute($ParamUpdate);
+                $ValidUpdate = $ResulUpdate->rowCount();
+
+                if ($ValidUpdate > 0) {
+
+                    ?>
+                    <script>
+                        Swal.fire({
+                            title: 'Acción exitosa',
+                            text: 'Foto eliminada correctamente',
+                            icon: 'success',
+                            confirmButtonText: 'Aceptar'
+                        }).then(function() {
+                            window.location.href = "index.php";
+                        });
+                    </script>
+                    <?php
+                }
+            } catch (\Exception $error) {
+                echo "Error al eliminar: " . $error->getMessage();
+            }
+        } else {
+            echo "ID eliminar no válido";
+        }
+    }
     //obtener el parametro eliminar
     if (isset($_GET["eliminar"])) {
         # code...
@@ -501,7 +585,14 @@ try {
                 if (isset($datos["foto"]) && $datos["foto"] != "") {
                     # code...
                     ?>
-                    <img src="<?php echo $datos["foto"]; ?>" alt="foto perfil" width="100px">
+                    <div class="contenedor-imagen">
+                        <img src="<?php echo $datos["foto"]; ?>" alt="foto perfil" width="200px">
+                        <div class="overlay">
+                            <a onclick="window.location.href='?eliminarImagen=<?php echo $datos['id']; ?>';">
+                                <button class="btn btn-danger">Eliminar</button>
+                            </a>
+                        </div>
+                    </div>
                     <?php    
                 }
                 ?>
