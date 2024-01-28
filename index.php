@@ -586,7 +586,7 @@ try {
                     # code...
                     ?>
                     <div class="contenedor-imagen">
-                        <img src="<?php echo $datos["foto"]; ?>" alt="foto perfil" width="200px">
+                        <img src="<?php echo $datos["foto"]; ?>" alt="foto perfil" width="200px" id="imagePreview">
                         <div class="overlay">
                             <a onclick="window.location.href='?eliminarImagen=<?php echo $datos['id']; ?>';">
                                 <button class="btn btn-danger">Eliminar</button>
@@ -601,6 +601,13 @@ try {
             <?php } ?>
             <br>
             <input type="file" class="form-control" name="foto" id="foto" accept="image/*" value="">
+            <button type="button" class="btn btn-danger" onclick="desSelecionarImagen()">Des-seleccionar imagen</button>
+            <script>
+                function desSelecionarImagen(){
+                    document.getElementById("foto").value = "";
+                    document.getElementById("imagePreview").src = "image/sube_tu_foto_aqui.webp";
+                }
+            </script>
         </div>
 
         <div class="col-12">
