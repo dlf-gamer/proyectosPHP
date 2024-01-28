@@ -425,6 +425,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
             echo "ID eliminar no válido";
         }
     }
+    
     //obtener el parametro eliminar
     if (isset($_GET["eliminar"])) {
         # code...
