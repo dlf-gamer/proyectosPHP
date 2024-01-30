@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 25-01-2024 a las 22:58:57
+-- Tiempo de generación: 30-01-2024 a las 05:01:01
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -43,7 +43,8 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`id`, `dni`, `nombre`, `apellido`, `correo`, `celular`, `password`, `foto`) VALUES
-(68, 1117232752, 'DANIEL', 'LOPEZ FORERO', 'DDANIELFORERO698@GMAIL.COM', '3232435243', '$2y$10$Ji.Gfe4mnNJcNuNieRONmuW5Hs.AjSGc0dvQy/5E2sPstrhLj/Qoq', 'image/foto_por_defecto.jpg');
+(131, 1117232752, 'DANIEL', 'LOPEZ FORERO', 'DDANIELFORERO698@GMAIL.COM', '3232435243', '$2y$10$tYfNZBNJgjDkWGY2iHVRu.Lc2l9CXXhVGdp5ZJB3zFgxaNEIVZayy', 'upload/65b8745067f6e5.90567678_20240130050016.png'),
+(132, 1117429475, 'MARIA', 'VALDERRAMA', 'MARIAVALDERRAMA10@GMAIL.COM', '3236391738', '$2y$10$zH2QLM2lPEk.buX3Rs7HAurw8wNHyPEwu4u/uhOnvWJO3b5Ikp1pe', 'image/foto_por_defecto.png');
 
 --
 -- Índices para tablas volcadas
@@ -64,7 +65,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=133;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
