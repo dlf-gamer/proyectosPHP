@@ -8,28 +8,15 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="https://unpkg.com/waves.css">
+    <script src="http://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script> 
+    <script src="http://threejs.org/examples/js/libs/stats.min.js"></script>
 </head>
-<style>
-    .waves {
-            position: relative;
-            overflow: hidden;
-            height: 100%;
-            animation: moveWaves 10s linear infinite alternate;
-        }
-        
-        @keyframes moveWaves {
-            0% {
-                transform: translateX(0);
-            }
-            100% {
-                transform: translateX(-50%);
-            }
-        }
-</style>
 <body class="login">
-<div class="waves animated">
-
+<div id="particles-js"></div>
+<script>
+    // Configuración de particles.js
+    let particles = particlesJS("particles-js", { "particles": { "number": { "value": 150, "density": { "enable": true, "value_area": 800 } }, "color": { "value": "#ffffff" }, "shape": { "type": "edge", "stroke": { "width": 0, "color": "#000000" }, "polygon": { "nb_sides": 5 }, "image": { "src": "img/github.svg", "width": 100, "height": 100 } }, "opacity": { "value": 0.5, "random": false, "anim": { "enable": false, "speed": 1, "opacity_min": 0.1, "sync": false } }, "size": { "value": 3, "random": true, "anim": { "enable": false, "speed": 40, "size_min": 0.1, "sync": false } }, "line_linked": { "enable": true, "distance": 150, "color": "#ffffff", "opacity": 0.4, "width": 1 }, "move": { "enable": true, "speed": 6, "direction": "none", "random": false, "straight": false, "out_mode": "out", "bounce": false, "attract": { "enable": false, "rotateX": 600, "rotateY": 1200 } } }, "interactivity": { "detect_on": "canvas", "events": { "onhover": { "enable": true, "mode": "repulse" }, "onclick": { "enable": true, "mode": "push" }, "resize": true }, "modes": { "grab": { "distance": 400, "line_linked": { "opacity": 1 } }, "bubble": { "distance": 400, "size": 40, "duration": 2, "opacity": 8, "speed": 3 }, "repulse": { "distance": 200, "duration": 0.4 }, "push": { "particles_nb": 4 }, "remove": { "particles_nb": 2 } } }, "retina_detect": true }); var count_particles, stats, update; stats = new Stats; stats.setMode(0); stats.domElement.style.position = 'absolute'; stats.domElement.style.left = '0px'; stats.domElement.style.top = '0px'; document.body.appendChild(stats.domElement); count_particles = document.querySelector('.js-count-particles'); update = function () { stats.begin(); stats.end(); if (window.pJSDom[0].pJS.particles && window.pJSDom[0].pJS.particles.array) { count_particles.innerText = window.pJSDom[0].pJS.particles.array.length; } requestAnimationFrame(update); }; requestAnimationFrame(update);
+</script>
 <?php
 
 //
@@ -265,12 +252,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 ?>
 <style>
+/* Estilo para el input file */
+.custom-file-input {
+        opacity: 0;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        cursor: pointer;
+    }
+
+    /* Estilo para el contenedor del input file */
+    .file-container {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        width: 200px; /* Ajusta el ancho según tus necesidades */
+        height: 40px; /* Ajusta la altura según tus necesidades */
+        border: 1px solid #ccc; /* Estilo de borde opcional */
+        border-radius: 5px; /* Estilo de borde redondeado opcional */
+    }
+    label{
+        color: white;
+    }
+    input{
+        background: transparent!important;
+    }
+    #particles-js {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: #000000;
+        background-image: url("");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: 50% 50%;
+    }
     /* Estilos generales */
     body {
         font-family: Arial, sans-serif;
         background-color: #f5f5f5;
         margin: 0;
         padding: 0;
+        color: #ffffff
     }
     .container {
         display: flex;
@@ -282,10 +306,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         position: relative;
         min-width: 400px;
         transition: transform 0.5s, opacity 0.5s;
-        background-color: #ffffff;
+        background: rgba(255, 255, 255, 0); 
         border-radius: 10px;
+        border:1px solid white;
         padding: 20px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
     .card-register {
         transform: translateY(-100%);
@@ -359,7 +383,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                     <div class="mb-3">
                         <label for="foto" class="form-label">Foto</label>
-                        <input type="file" class="form-control" name="foto" id="foto">
+                        <div class="file-container">
+                        <input type="file" class="form-control custom-file-input" name="foto" id="foto">
+                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -382,7 +409,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             cardRegister.style.opacity = "1";
             cardRegister.style.zIndex = "1";
             cardLogin.style.zIndex = "-1";
-            body.style.backgroundImage = "url('src/background2.png')";
         } else if( tipo === "login" ) {
             cardLogin.style.transform = "translateY(0)";
             cardLogin.style.opacity = "1";
@@ -390,7 +416,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             cardRegister.style.opacity = "0";
             cardRegister.style.zIndex = "-1";
             cardLogin.style.zIndex = "1";
-            body.style.backgroundImage = "url('src/background2.png')";
         }
         
     }
