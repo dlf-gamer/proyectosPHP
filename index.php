@@ -5,32 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <title>CRUD de Usuarios</title>
+    <link rel="stylesheet" href="style/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body>
-<style>
-    /* inicio código css para que el botón aparezca sobre la imagen  */
-    .contenedor-imagen {
-        position: relative;
-        display: inline-block;
-    }
-
-    .overlay {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        opacity: 0;
-        transition: opacity 0.3s ease-in-out;
-    }
-
-    .contenedor-imagen:hover .overlay {
-        opacity: 1;
-    }
-    /* fin código css para que el botón aparezca sobre la imagen  */
-</style>
+<body class="index">
 
 <?php
 
@@ -51,18 +31,26 @@ $usuario = isset($_SESSION["nombre_usuario"]) ? $_SESSION["nombre_usuario"] : nu
 $imagen = isset($_SESSION["foto_usuario"]) ? $_SESSION["foto_usuario"] : null;
 
 // Comprobamos si esta definida la session "tiempo"
-if (isset($_SESSION["tiempo"])) {
+if (isset($_SESSION["tiempo"]) ? $_SESSION["tiempo"] : null) {
     // Tiempo en segundos para dar vida a la session
-    $tiempo = 120;// Segundos
+    $segundos = 1800;// Segundos
 
     // Calculamos el tiempo de vida inactivo
     $limite = time() - $_SESSION["tiempo"];
 
     // Comparacion para redirigir pagina, si la vida de session sea mayor a el tiempo insertado en inactivo
-    if ($limite > $tiempo) {
+    if ($limite > $segundos) {
         # code...
-        header("Location: destroy.php");
-        exit();
+        echo 
+        "
+        <script>
+            window.alert('ADIOS');
+            window.location.reload();
+            window.location.href = 'destroy.php';
+        </script>
+        ";
+        //header("Location: destroy.php");
+        exit();// Salimos del escript despues de la carga
     }
 } else {
     $_SESSION["tiempo"] = time();// Activamos session tiempo

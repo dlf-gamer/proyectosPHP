@@ -1,0 +1,58 @@
+
+    body.register {
+        background-image: url("../src/background.png");
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+    .form-register {
+        max-width: 400px;
+        padding: 15px;
+        margin: auto;
+    }
+
+    body.login {
+        background-color: #f5f5f5;
+    }
+    .form-signin {
+        max-width: 400px;
+        padding: 15px;
+        margin: auto;
+    }
+    .form-signin .form-floating:focus-within {
+        z-index: 2;
+    }
+    .form-signin input[type="email"] {
+        margin-bottom: -1px;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+    .form-signin input[type="password"] {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+    body.login{
+        background-image: url("../src/background.png");
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
+    
+    /* inicio código css para que el botón aparezca sobre la imagen  */
+    .contenedor-imagen {
+        position: relative;
+        display: inline-block;
+    }
+
+    .overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+    }
+
+    .contenedor-imagen:hover .overlay {
+        opacity: 1;
+    }
+    /* fin código css para que el botón aparezca sobre la imagen  */

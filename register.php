@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
+    <link rel="stylesheet" href="style/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body>
+<body class="register">
 
 <?php
 
@@ -139,11 +140,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
         $imagen = imagen();//
 
+        // Fecha del registro
+        $zona = new DateTimeZone("America/Bogota");
+        $actual = new DateTime("now", $zona);
+        $fecha = $actual->format("Y-m-d H:m:s");
+
         //
         try {
             // Setencia QSL para registrar datos
-            $mysql = ("INSERT INTO usuario (id, dni, nombre, apellido, correo, celular, password, foto) VALUES (null, ?, ?, ?, ?, ?, ?, ?)");
-            $param = array($dni, $nombre, $apellido, $correo, $celular, $encriptar, $imagen);// Capturar los parametros en modo de arreglos
+            $mysql = ("INSERT INTO usuario (id, dni, nombre, apellido, correo, celular, password, foto, fecha_insert) VALUES (null, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $param = array($dni, $nombre, $apellido, $correo, $celular, $encriptar, $imagen, $fecha);// Capturar los parametros en modo de arreglos
             $resul = $conexion->prepare($mysql);// Prepara la sentencia
             $resul->execute($param);// Ejecutar la sentencia
             $valid = $resul->rowCount();// Obtener el numero de filas afectadas
@@ -171,19 +177,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 
 ?>
-<style>
-        body {
-            background-image: url("src/background.png");
-            background-repeat: no-repeat;
-            background-size: cover;
-        }
-        .form-register {
-            max-width: 400px;
-            padding: 15px;
-            margin: auto;
-        }
-
-    </style>
 
 <div class="container p-5">
         <div class="row justify-content-center align-items-center min-vh-100">
