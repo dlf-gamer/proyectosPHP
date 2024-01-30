@@ -173,13 +173,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 ?>
 <style>
         body {
-            background-color: #f5f5f5;
+            background-image: url("src/background.png");
+            background-repeat: no-repeat;
+            background-size: cover;
         }
         .form-register {
             max-width: 400px;
             padding: 15px;
             margin: auto;
         }
+
     </style>
 
 <div class="container p-5">

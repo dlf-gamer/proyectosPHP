@@ -97,6 +97,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             border-top-left-radius: 0;
             border-top-right-radius: 0;
         }
+        body{
+            background-image: url("src/background.png");
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
     </style>
 </head>
 <div class="container">
