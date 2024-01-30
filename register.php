@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
@@ -168,48 +171,63 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 
 ?>
+<style>
+        body {
+            background-color: #f5f5f5;
+        }
+        .form-register {
+            max-width: 400px;
+            padding: 15px;
+            margin: auto;
+        }
+    </style>
 
-<div>
-    <div>
-        <h2>Registrarse</h2>
+<div class="container p-5">
+        <div class="row justify-content-center align-items-center min-vh-100">
+            <div class="col-md-6">
+                <div class="card shadow-lg">
+                    <div class="card-body">
+                        <h2 class="text-center mb-4">Registrarse</h2>
+                        <form action="register.php" method="POST" enctype="multipart/form-data" class="form-register">
+                            <div class="mb-3">
+                                <label for="dni" class="form-label">DNI</label>
+                                <input type="number" class="form-control" name="dni" id="dni" placeholder="Cédula">
+                            </div>
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">Nombre</label>
+                                <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Nombre">
+                            </div>
+                            <div class="mb-3">
+                                <label for="apellido" class="form-label">Apellido</label>
+                                <input type="text" class="form-control" name="apellido" id="apellido" placeholder="Apellido">
+                            </div>
+                            <div class="mb-3">
+                                <label for="correo" class="form-label">Correo</label>
+                                <input type="email" class="form-control" name="correo" id="correo" placeholder="Correo">
+                            </div>
+                            <div class="mb-3">
+                                <label for="celular" class="form-label">Celular</label>
+                                <input type="text" class="form-control" name="celular" id="celular" placeholder="Celular">
+                            </div>
+                            <div class="mb-3">
+                                <label for="clave" class="form-label">Clave</label>
+                                <input type="password" class="form-control" name="clave" id="clave" placeholder="Clave">
+                            </div>
+                            <div class="mb-3">
+                                <label for="foto" class="form-label">Foto</label>
+                                <input type="file" class="form-control" name="foto" id="foto">
+                            </div>
+                            <button class="w-100 btn btn-lg btn-primary" type="submit" name="register">Registrarse</button>
+                            <hr class="my-4">
+                            <div class="d-flex justify-content-center">
+                                <a href="login.php" class="btn btn-outline-secondary">Iniciar Sesión</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <form action="register.php" method="POST" enctype="multipart/form-data">
-        <div>
-            <label for="dni">DNI</label>
-            <input type="number" name="dni" id="dni" placeholder="Cedula">
-        </div>
-        <div>
-            <label for="nombre">Nombre</label>
-            <input type="text" name="nombre" id="nombre" placeholder="Nombre">
-        </div>
-        <div>
-            <label for="apellido">Apellido</label>
-            <input type="text" name="apellido" id="apellido" placeholder="Apellido">
-        </div>
-        <div>
-            <label for="correo">Correo</label>
-            <input type="email" name="correo" id="correo" placeholder="Correo">
-        </div>
-        <div>
-            <label for="celular">Celular</label>
-            <input type="text" name="celular" id="celular" placeholder="Celular">
-        </div>
-        <div>
-            <label for="clave">Clave</label>
-            <input type="password" name="clave" id="clave" placeholder="Clave">
-        </div>
-        <div>
-            <label for="foto">Foto</label>
-            <input type="file" name="foto" id="foto">
-        </div>
-        <div>
-            <input type="submit" name="register" value="Registrare">
-        </div>
-        <div>
-            <button type="button" name="login"><a href="login.php">Iniciar Sesion</a></button>
-        </div>
-    </form>
-</div>
     
 </body>
 
