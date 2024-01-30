@@ -4,11 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <link rel="stylesheet" href="style/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://unpkg.com/waves.css">
 </head>
-<body>
+<style>
+    .waves {
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            animation: moveWaves 10s linear infinite alternate;
+        }
+        
+        @keyframes moveWaves {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+</style>
+<body class="login">
+<div class="waves animated">
 
 <?php
 
@@ -187,7 +207,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         //
         try {
             //code...
-            $mysql = "SELECT id, nombre, password, foto FROM usuario WHERE correo = ?";
+            $mysql = ("SELECT id, nombre, password, foto FROM usuario WHERE correo = ?");
             $param = array($correo);
             $resul = $conexion->prepare($mysql);
             $resul->execute($param);
@@ -201,15 +221,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $encriptado = password_verify($password, $datos["password"]);
 
                 if ($encriptado) {
-                    # code...
-                    $_SESSION["id_usuario"] = $datos["id"];
-                    $_SESSION["nombre_usuario"] = $datos["nombre"];
-                    $_SESSION["foto_usuario"] = $datos["foto"];// Almacena la ruta o nombre del archivo de la foto
-                    $_SESSION["tiempo"] = $_SESSION["tiempo"];// Crear variable
+                    // Fecha del registro
+                    $zona = new DateTimeZone("America/Bogota");
+                    $actual = new DateTime("now", $zona);
+                    $fecha = $actual->format("Y-m-d H:m:s");
 
-                    header("Location: index.php");
-                    exit();
-                    
+                    try {
+                        //code...
+                        $mysql1 = ("UPDATE usuario SET fecha_login = ? WHERE id = ?");
+                        $param1 = array($fecha, $datos["id"]);
+                        $resul1 = $conexion->prepare($mysql1);
+                        $resul1->execute($param1);
+                        $valid1 = $resul1->rowCount();
+            
+                        if ($valid1 > 0) {
+                            //
+                            $_SESSION["id_usuario"] = $datos["id"];
+                            $_SESSION["nombre_usuario"] = $datos["nombre"];
+                            $_SESSION["foto_usuario"] = $datos["foto"];// Almacena la ruta o nombre del archivo de la foto
+                            $_SESSION["tiempo"] = $_SESSION["tiempo"];// Crear variable
+
+                            header("Location: index.php");
+                            exit();
+                        }
+            
+                    } catch (\Exception $error1) {
+                        //throw $th;
+                        echo "ERROR AL ACTUALIZAR => ".$error1->getMessage();
+                    }
                 } else {
                     print_r("CLAVE INCORRECTA");
                 }
@@ -334,6 +373,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     function toggleForm (tipo) {
         const cardLogin = document.querySelector('.card-login');
         const cardRegister = document.querySelector('.card-register');
+        const body = document.querySelector('body');
 
         if( tipo === "register" ) {
             cardLogin.style.transform = "translateY(-100%)";
@@ -342,6 +382,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             cardRegister.style.opacity = "1";
             cardRegister.style.zIndex = "1";
             cardLogin.style.zIndex = "-1";
+            body.style.backgroundImage = "url('src/background2.png')";
         } else if( tipo === "login" ) {
             cardLogin.style.transform = "translateY(0)";
             cardLogin.style.opacity = "1";
@@ -349,9 +390,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             cardRegister.style.opacity = "0";
             cardRegister.style.zIndex = "-1";
             cardLogin.style.zIndex = "1";
+            body.style.backgroundImage = "url('src/background2.png')";
         }
         
     }
 </script>
+</div>
 </body>
 </html>
