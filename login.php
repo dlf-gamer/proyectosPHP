@@ -252,6 +252,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 ?>
 <style>
+    .btn-glow:hover{
+        box-shadow: 0 0 100px #0d6efd;
+    }
+    .btn-glow-2:hover{
+        box-shadow: 0 0 100px #8b5bff;;
+    }
 /* Estilo para el input file */
 .custom-file-input {
         opacity: 0;
@@ -277,6 +283,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     input{
         background: transparent!important;
+        color: white!important;
     }
     #particles-js {
         position: absolute;
@@ -342,15 +349,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="password" class="form-control" name="password" id="password" placeholder="Contraseña">
                 <label for="password">Contraseña</label>
             </div>
-            <button class="w-100 btn btn-lg btn-primary" type="submit" name="session">Iniciar Sesión</button>
+            <button class="w-100 btn btn-lg btn btn-outline-primary btn-glow" type="submit" name="session">Iniciar Sesión</button>
         </form>
         <hr>
         <p style="text-align:right">Necesitas una cuenta?</p>
-        <button class="toggle-button" onclick="toggleForm('register')">Registrate</button>
+        <button class="toggle-button btn-glow-2" onclick="toggleForm('register')">Registrate</button>
     </div>
     <div class="card card-register">
         <h2 class="text-center">Registrarse</h2>
-            <form action="register.php" method="POST" enctype="multipart/form-data" class="form-register">
+            <form action="login.php" method="POST" enctype="multipart/form-data" class="form-register">
             <div class="row">
                 <!-- Columna 1 -->
                 <div class="col-md-6">
@@ -390,10 +397,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                 </div>
             </div>
-                <button class="w-100 btn btn-lg btn-primary" type="submit" name="register">Registrarse</button>
+                <button class="w-100 btn btn-lg btn btn-outline-primary btn-glow" type="submit" name="register">Registrarse</button>
                 <hr class="my-4">
             </form>
-        <button class="toggle-button" onclick="toggleForm('login')">Volver a Iniciar Sesión</button>
+        <button class="toggle-button btn-glow-2" onclick="toggleForm('login')">Volver a Iniciar Sesión</button>
     </div>
 </div>
 <script>
