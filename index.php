@@ -37,6 +37,37 @@
 // incluir archivo de conexión
 require "conexion.php";
 
+session_start();
+
+// Verifica si el usuario ha iniciado session
+if (!isset($_SESSION["id_usuario"])) {
+    # code...
+    header("Location: login.php");
+    exit();
+}
+
+// Capturar las variables dession
+$usuario = isset($_SESSION["nombre_usuario"]) ? $_SESSION["nombre_usuario"] : null;
+$imagen = isset($_SESSION["foto_usuario"]) ? $_SESSION["foto_usuario"] : null;
+
+// Comprobamos si esta definida la session "tiempo"
+if (isset($_SESSION["tiempo"])) {
+    // Tiempo en segundos para dar vida a la session
+    $tiempo = 120;// Segundos
+
+    // Calculamos el tiempo de vida inactivo
+    $limite = time() - $_SESSION["tiempo"];
+
+    // Comparacion para redirigir pagina, si la vida de session sea mayor a el tiempo insertado en inactivo
+    if ($limite > $tiempo) {
+        # code...
+        header("Location: destroy.php");
+        exit();
+    }
+} else {
+    $_SESSION["tiempo"] = time();// Activamos session tiempo
+}
+
 // inicializar datos vacíos para capturar en el formulario a la hora de actualizar
 $datos = array('id' => '', 'dni' => '', 'nombre' => '', 'apellido' => '', 'correo' => '', 'celular' => '');
 
@@ -52,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $clave = $_POST["password"];// Contraseña
         $foto = $_FILES['foto'];// Imagen
 
-        // Generar una contraseña aleatoria
+        /* // Generar una contraseña aleatoria
         function GeneradorPassword($longitud = 8) {
             $caracteresPermitidos = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_";
             $password = '';
@@ -65,11 +96,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             return $password;
         }
 
-        //
-        $clave = GeneradorPassword();
+        // Generar y almacenar la contraseña durante el registro
+        $clave = GeneradorPassword(); */
 
         // Hash de la contraseña para elmacenarla de manera asegura
         $encriptar = password_hash($clave, PASSWORD_DEFAULT);
+        //$encriptar = $clave;
 
         // Validar campos obligatorios
         if (empty($dni) or empty($nombre) or empty($apellido) or empty($correo) or empty($celular) or empty($clave)) {
@@ -200,7 +232,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // id
         $id = isset($_POST["id"]) ? $_POST["id"] : null;
 
-        // Generar una contraseña aleatoria
+        /* // Generar una contraseña aleatoria
         function GeneradorPassword($longitud = 8) {
             $caracteresPermitidos = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_";
             $password = '';
@@ -214,7 +246,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
 
         // Generar una contraseña aleatoria solo si no se proporcionó una nueva
-        $clave = empty($clave) ? GeneradorPassword() : null;
+        $clave = GeneradorPassword(); */
 
         // Hash de la contraseña para elmacenarla de manera asegura
         $encriptar = password_hash($clave, PASSWORD_DEFAULT);
@@ -554,7 +586,16 @@ try {
 <div class="container mt-4">
     <div style="display: flex; justify-content:space-between">
         <h1 style="text-align:right" >CRUD PHP PDO ANTI SQL INYECTION</h1>
-        <h1 style="text-align:right" >USUARIOS</h1>
+        <?php
+        if (isset($usuario) and $usuario != "") {
+            # code...
+            ?>
+            <img src="<?php echo isset($imagen) ? $imagen : null; ?>" alt="usuario" width="100px">
+            <h1 style="text-align:right" > <?php echo isset($usuario) ? $usuario : null; ?> </h1>
+            <a href="destroy.php">Cerrar Session</a>
+            <?php
+        }
+        ?>
     </div>
 
 
@@ -567,31 +608,31 @@ try {
     <form action="index.php" method="POST" enctype="multipart/form-data" class="row g-3">
 <?php } ?>
     
-        <input type="hidden" name="id" value="<?php echo $datos['id']; ?>">
+        <input type="hidden" name="id" value="<?php echo $datos['id'] ? $datos["id"] : null; ?>">
 
         <div class="col-md-6">
             <label for="dni" class="form-label">DNI</label>
-            <input type="number" class="form-control" name="dni" id="dni" value="<?php echo $datos['dni']; ?>">
+            <input type="number" class="form-control" name="dni" id="dni" value="<?php echo $datos['dni'] ? $datos["dni"] : null; ?>">
         </div>
 
         <div class="col-md-6">
             <label for="nombre" class="form-label">Nombre</label>
-            <input type="text" class="form-control" name="nombre" id="nombre" value="<?php echo $datos['nombre']; ?>">
+            <input type="text" class="form-control" name="nombre" id="nombre" value="<?php echo $datos['nombre'] ? $datos["nombre"] : null; ?>">
         </div>
 
         <div class="col-md-6">
             <label for="apellido" class="form-label">Apellido</label>
-            <input type="text" class="form-control" name="apellido" id="apellido" value="<?php echo $datos['apellido']; ?>">
+            <input type="text" class="form-control" name="apellido" id="apellido" value="<?php echo $datos['apellido'] ? $datos["apellido"] : null; ?>">
         </div>
 
         <div class="col-md-6">
             <label for="correo" class="form-label">Correo</label>
-            <input type="email" class="form-control" name="correo" id="correo" value="<?php echo $datos['correo']; ?>">
+            <input type="email" class="form-control" name="correo" id="correo" value="<?php echo $datos['correo'] ? $datos["correo"] : null; ?>">
         </div>
 
         <div class="col-md-6">
             <label for="celular" class="form-label">Celular</label>
-            <input type="text" class="form-control" name="celular" id="celular" value="<?php echo $datos['celular']; ?>">
+            <input type="text" class="form-control" name="celular" id="celular" value="<?php echo $datos['celular'] ? $datos["celular"] : null; ?>">
         </div>
 
         <div class="col-md-6">
@@ -608,7 +649,7 @@ try {
                     # code...
                     ?>
                     <div class="contenedor-imagen">
-                        <img src="<?php echo $datos["foto"]; ?>" alt="foto perfil" width="150px" id="imagenInput">
+                        <img src="<?php echo $datos["foto"] ? $datos["foto"] : null; ?>" alt="foto perfil" width="150px" id="imagenInput">
                         <?php
                         if (!empty($datos["foto"]) and $datos["foto"] != "image/foto_por_defecto.png") {
                             # code...
