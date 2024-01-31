@@ -26,6 +26,7 @@ require_once ("conexion.php");
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    //
     if (isset($_POST["register"])) {
         //
         //echo "<script>alert('si llega')</script>";
@@ -176,6 +177,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "ERROR AL REGISTRAR DATOS => \n". $error->getMessage();
         }
     }
+
     //
     if (isset($_POST["session"])) {
         //
@@ -251,6 +253,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 } 
 
 ?>
+
 <style>
 /* Estilo para el input file */
 .custom-file-input {
@@ -327,8 +330,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         cursor: pointer;
     }
 </style>
+
 </head>
 <body>
+
 <div class="container">
     <div class="card card-login">
         <h2 class="text-center">Iniciar Sesión</h2>
@@ -348,6 +353,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <p style="text-align:right">Necesitas una cuenta?</p>
         <button class="toggle-button" onclick="toggleForm('register')">Registrate</button>
     </div>
+
     <div class="card card-register">
         <h2 class="text-center">Registrarse</h2>
             <form action="register.php" method="POST" enctype="multipart/form-data" class="form-register">
@@ -396,6 +402,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <button class="toggle-button" onclick="toggleForm('login')">Volver a Iniciar Sesión</button>
     </div>
 </div>
+
 <script>
     function toggleForm (tipo) {
         const cardLogin = document.querySelector('.card-login');
@@ -420,6 +427,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
     }
 </script>
+
 </div>
+
 </body>
 </html>
