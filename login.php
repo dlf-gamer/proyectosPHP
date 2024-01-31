@@ -298,6 +298,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         background-size: cover;
         background-position: 50% 50%;
     }
+
     /* Estilos generales */
     body {
         font-family: Arial, sans-serif;

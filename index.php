@@ -9,6 +9,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="http://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script> 
+        <script src="http://threejs.org/examples/js/libs/stats.min.js"></script>
 </head>
 <body class="index">
 
@@ -570,21 +572,83 @@ try {
 }
 
 ?>
+<div id="particles-js"></div>
+<script>
+    // Configuración de particles.js
+    let particles = particlesJS("particles-js", { "particles": { "number": { "value": 150, "density": { "enable": true, "value_area": 800 } }, "color": { "value": "#ffffff" }, "shape": { "type": "edge", "stroke": { "width": 0, "color": "#000000" }, "polygon": { "nb_sides": 5 }, "image": { "src": "img/github.svg", "width": 100, "height": 100 } }, "opacity": { "value": 0.5, "random": false, "anim": { "enable": false, "speed": 1, "opacity_min": 0.1, "sync": false } }, "size": { "value": 3, "random": true, "anim": { "enable": false, "speed": 40, "size_min": 0.1, "sync": false } }, "line_linked": { "enable": true, "distance": 150, "color": "#ffffff", "opacity": 0.4, "width": 1 }, "move": { "enable": true, "speed": 6, "direction": "none", "random": false, "straight": false, "out_mode": "out", "bounce": false, "attract": { "enable": false, "rotateX": 600, "rotateY": 1200 } } }, "interactivity": { "detect_on": "canvas", "events": { "onhover": { "enable": true, "mode": "repulse" }, "onclick": { "enable": true, "mode": "push" }, "resize": true }, "modes": { "grab": { "distance": 400, "line_linked": { "opacity": 1 } }, "bubble": { "distance": 400, "size": 40, "duration": 2, "opacity": 8, "speed": 3 }, "repulse": { "distance": 200, "duration": 0.4 }, "push": { "particles_nb": 4 }, "remove": { "particles_nb": 2 } } }, "retina_detect": true }); var count_particles, stats, update; stats = new Stats; stats.setMode(0); stats.domElement.style.position = 'absolute'; stats.domElement.style.left = '0px'; stats.domElement.style.top = '0px'; document.body.appendChild(stats.domElement); count_particles = document.querySelector('.js-count-particles'); update = function () { stats.begin(); stats.end(); if (window.pJSDom[0].pJS.particles && window.pJSDom[0].pJS.particles.array) { count_particles.innerText = window.pJSDom[0].pJS.particles.array.length; } requestAnimationFrame(update); }; requestAnimationFrame(update);
+</script>
 
-<div class="container mt-4">
-    <div style="display: flex; justify-content:space-between">
-        <h1 style="text-align:right" >CRUD PHP PDO ANTI SQL INYECTION</h1>
-        <?php
-        if (isset($usuario) and $usuario != "") {
-            # code...
-            ?>
-            <img src="<?php echo isset($imagen) ? $imagen : null; ?>" alt="usuario" width="100px">
-            <h1 style="text-align:right" > <?php echo isset($usuario) ? $usuario : null; ?> </h1>
-            <a href="destroy.php">Cerrar Session</a>
-            <?php
-        }
+<div class="container pt-4 px-4 py-4">
+<style>
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: #f9f9f9;
+        padding: 0.5rem 1rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+    }
+    #particles-js {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: #000000;
+        background-image: url("");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: 50% 50%;
+    }
+    .container {
+        position: relative;
+        z-index: 2;
+        background-color: #ffffff;
+    }
+
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var profileImage = document.getElementById("profile");
+        var dropdownMenu = document.getElementById("dropdown-menu");
+
+        profileImage.addEventListener("click", function (event) {
+            event.stopPropagation();
+            dropdownMenu.style.display = dropdownMenu.style.display === "block" ? "none" : "block";
+        });
+
+
+        document.addEventListener("click", function (event) {
+            var targetElement = event.target;
+            if (!dropdownMenu.contains(targetElement) && targetElement !== profileImage) {
+                dropdownMenu.style.display = "none";
+            }
+        });
+    });
+</script>
+<div style="display: flex; justify-content: space-between">
+    <h1 style="text-align: right">CRUD PHP PDO ANTI SQL INYECTION</h1>
+    <?php
+    if (isset($usuario) and $usuario != "") {
         ?>
-    </div>
+        <div id="profile">
+            
+            <div style="position: relative;">
+                <img id="profile-image" src="<?php echo isset($imagen) ? $imagen : null; ?>" alt="usuario" width="40px">
+                <div id="dropdown-menu" class="dropdown-menu">
+                    <a href="destroy.php" style="text-align:right"><p>Cerrar Sesión</p></a>
+                </div>
+            </div>
+            <div>
+                <p style="text-align: right"> <?php echo isset($usuario) ? $usuario : null; ?> </p>
+            </div>
+        </div>
+        
+        <?php
+    }
+    ?>
+</div>
 
 
 
