@@ -393,7 +393,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         padding: 20px;
     }
     .card-register {
-        transform: translateY(-100%);
+        transform: translateY(calc(-100% + 100vh));
         opacity: 0;
         position: absolute;
         z-index: -1;
@@ -485,22 +485,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     function toggleForm (tipo) {
         const cardLogin = document.querySelector('.card-login');
         const cardRegister = document.querySelector('.card-register');
-        const body = document.querySelector('body');
 
-        if( tipo === "register" ) {
-            cardLogin.style.transform = "translateY(-100%)";
+        if (tipo === "register") {
             cardLogin.style.opacity = "0";
-            cardRegister.style.transform = "translateY(0)";
             cardRegister.style.opacity = "1";
-            cardRegister.style.zIndex = "1";
-            cardLogin.style.zIndex = "-1";
-        } else if( tipo === "login" ) {
-            cardLogin.style.transform = "translateY(0)";
+            setTimeout(() => {
+                cardLogin.style.transform = "translateY(-100%)";
+                cardRegister.style.transform = "translateY(0)";
+                cardRegister.style.zIndex = "1";
+                cardLogin.style.zIndex = "-1";
+            }, 300); // ajusta el tiempo de espera según la duración de la transición CSS
+        } else if (tipo === "login") {
             cardLogin.style.opacity = "1";
-            cardRegister.style.transform = "translateY(-100%)";
             cardRegister.style.opacity = "0";
-            cardRegister.style.zIndex = "-1";
-            cardLogin.style.zIndex = "1";
+            setTimeout(() => {
+                cardLogin.style.transform = "translateY(0)";
+                cardRegister.style.transform = "translateY(calc(100% + 100vh))";
+                cardRegister.style.zIndex = "-1";
+                cardLogin.style.zIndex = "1";
+            }, 300); // ajusta el tiempo de espera según la duración de la transición CSS
         }
         
     }
