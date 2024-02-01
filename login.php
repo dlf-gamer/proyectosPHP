@@ -225,6 +225,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $actual = new DateTime("now", $zona);
         $fecha = $actual->format("Y-m-d H:m:s");
 
+        // El estado va hacer inactivo para validar el usuario con el correo
+        $estado = 0;
+
         // 
         try {
             //
@@ -249,10 +252,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Destinatario
             $email->setFrom('danieldelgado999@outlook.com', 'Verificar Email');
             $email->addAddress($correo, "HOLA");     //Add a recipient
-            /* $email->addAddress('ellen@example.com');               //Name is optional
-            $email->addReplyTo('info@example.com', 'Information');
-            $email->addCC('cc@example.com');
-            $email->addBCC('bcc@example.com'); */
+            //$email->addAddress('ellen@example.com');               //Name is optional
+            $email->addReplyTo('enviosnacionales414@gmail.com', 'Information');
+            $email->addCC('enviosnacionales414@gmail.com');
+            //$email->addBCC('bcc@example.com');
 
             //Attachments
         /*  $email->addAttachment('/var/tmp/file.tar.gz');         //Add attachments
@@ -308,7 +311,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $email->Body    = $html;
             $email->AltBody = 'Este es el contexto plano para clientes de correo no HTML';
 
-
             // Verificar si se envio el correo
             $email->send();
                 
@@ -321,8 +323,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         //
         try {
             // Setencia QSL para registrar datos
-            $mysql = ("INSERT INTO usuario (id, dni, nombre, apellido, correo, celular, password, foto, fecha_insert) VALUES (null, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $param = array($dni, $nombre, $apellido, $correo, $celular, $encriptar, $imagen, $fecha);// Capturar los parametros en modo de arreglos
+            $mysql = ("INSERT INTO usuario (id, dni, nombre, apellido, correo, celular, password, foto, estado, fecha_insert) VALUES (null, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $param = array($dni, $nombre, $apellido, $correo, $celular, $encriptar, $imagen, $estado, $fecha);// Capturar los parametros en modo de arreglos
             $resul = $conexion->prepare($mysql);// Prepara la sentencia
             $resul->execute($param);// Ejecutar la sentencia
             $valid = $resul->rowCount();// Obtener el numero de filas afectadas
@@ -330,16 +332,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Verificar el numero de filas afectadas
             if ($valid > 0) {
                 //
-                /* echo "EL REGISTRO SE REALIZO CON EXITO \n".$valid;
+                echo "EL REGISTRO SE REALIZO CON EXITO \n".$valid;
                 $arreglo = array($param);
                 echo "<pre>";
                 print_r($arreglo);
-                echo "/<pre>"; */
-                header("Location: login.php");
-                exit();
+                echo "/<pre>";
+                //header("Location: login.php");
+                die();
 
             } else {
                 echo "NO SE PUDO REALIZAR EL REGISTRO \n";
+                exit();
             }
 
         } catch (\Exception $error) {
@@ -673,7 +676,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <div class="container">
     <div class="card card-login">
         <h2 class="text-center">Iniciar Sesión</h2>
-        <form action="#" method="POST">
+        <form action="login.php" method="POST">
             <!-- Campos de inicio de sesión -->
             <div class="form-floating mb-3">
                 <input type="email" class="form-control" name="correo" id="correo" placeholder="name@example.com">
@@ -692,7 +695,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
     <div class="card card-register">
         <h2 class="text-center">Registrarse</h2>
-            <form action="#" method="POST" enctype="multipart/form-data" class="form-register">
+            <form action="login.php" method="POST" enctype="multipart/form-data" class="form-register">
             <div class="row">
                 <!-- Columna 1 -->
                 <div class="col-md-6">
