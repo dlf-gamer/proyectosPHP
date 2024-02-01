@@ -249,15 +249,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 
             // Verificar si se envio el correo
-            if ($email->send()) {
-                # code...
-                //echo "error al enviar el email".$email->ErrorInfo;
-                header("Location: register.php");
-                exit();
-            } else {
-                echo "no se envio el email";
-                exit();
-            }
+            $email->send();
 
         } catch (Exception $error) {
             //throw $th;
