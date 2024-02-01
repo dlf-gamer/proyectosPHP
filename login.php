@@ -69,23 +69,6 @@
     },
     retina_detect: true,
     });
-    var count_particles, stats, update;
-    stats = new Stats();
-    stats.setMode(0);
-    stats.domElement.style.position = "absolute";
-    stats.domElement.style.left = "0px";
-    stats.domElement.style.top = "0px";
-    document.body.appendChild(stats.domElement);
-    count_particles = document.querySelector(".js-count-particles");
-    update = function () {
-    stats.begin();
-    stats.end();
-    if (window.pJSDom[0].pJS.particles && window.pJSDom[0].pJS.particles.array) {
-        count_particles.innerText = window.pJSDom[0].pJS.particles.array.length;
-    }
-    requestAnimationFrame(update);
-    };
-    requestAnimationFrame(update);
 </script>
 <?php
 
@@ -365,6 +348,152 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
+    if (isset($_POST["forgotPassword"])) {
+
+        $correo = $_POST["correo"];
+        $consulta_buscar_por_email = "SELECT COUNT(*) AS cantidad FROM usuario WHERE correo = ?";
+        $consulta = $conexion->prepare($consulta_buscar_por_email);
+        $consulta->execute([$correo]);
+        $resultado = $consulta->fetch(PDO::FETCH_ASSOC);
+        echo $resultado['cantidad'];
+
+        if ($resultado['cantidad'] > 0) {
+
+            $token = bin2hex(random_bytes(16));
+
+            $consulta_actualizar_token= "UPDATE usuario SET token = ? WHERE correo = ?";
+            $param = array($token, $correo);
+            $resul = $conexion->prepare($consulta_actualizar_token);
+            $resul->execute($param);
+            $valid = $resul->rowCount();
+
+
+            // 
+            try {
+                //
+                $email->SMTPOptions = array(
+                    "tls" => array(
+                        "verify_peer" => false,
+                        "verify_peer_name" => false,
+                        "allow_self_signed" => true
+                    ),
+                );
+
+                // Configuracion del servidor SMTP del correo
+                $email->SMTPDebug = 0;//SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+                $email->isSMTP();                                            //Send using SMTP
+                $email->Host       = 'smtp.office365.com';                     //Set the SMTP server to send through
+                $email->SMTPAuth   = true;                                   //Enable SMTP authentication
+                $email->Username   = 'danieldelgado999@outlook.com';                     //SMTP username
+                $email->Password   = 'Matrix2847';//zkap hlna gkpv xuf                               //SMTP password
+                $email->SMTPSecure = 'tls';//PHPMailer::ENCRYPTION_STARTTLS;// PHPMailer::ENCRYPTION_SMTPS;             //Enable implicit TLS encryption
+                $email->Port       = 587;// 587 TLS O 465 SSL                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+
+                // Destinatario
+                $email->setFrom('danieldelgado999@outlook.com', 'Verificar Email');
+                $email->addAddress($correo, "HOLA");     //Add a recipient
+                /* $email->addAddress('ellen@example.com');               //Name is optional
+                $email->addReplyTo('info@example.com', 'Information');
+                $email->addCC('cc@example.com');
+                $email->addBCC('bcc@example.com'); */
+
+                //Attachments
+            /*  $email->addAttachment('/var/tmp/file.tar.gz');         //Add attachments
+                $email->addAttachment('/tmp/image.jpg', 'new.jpg'); */    //Optional name
+
+                // Configuración de caracteres y codificación
+                $email->CharSet = "UTF-8";
+                $email->Encoding = "base64";
+
+                // Configuración del contenido HTML
+                $email->isHTML(true);                                  //Set email format to HTML
+                $email->Subject = 'Verificación de Correo Electrónico';
+
+                //
+                $html = '
+                <div>
+                    <div>
+                        <h2>Recuperar contraseña</h2>
+                    </div>
+                    <div>
+                        <h3>HOLA, recibimos una solicitud para recuperar tu contraseña</h3>
+                        <p>Si no realizaste esta solicitud, puedes ignorar este mensaje.</p>
+                        <p>Para restablecer tu contraseña, haz clic en el siguiente enlace: <b><a href="http://localhost/phpdaniel/login.php?changePassword=true&token=' . $token . '">Aqui</a></b></p>
+                    </div>
+                </div>';
+
+                $email->Body    = $html;
+                $email->AltBody = 'Este es el contexto plano para clientes de correo no HTML';
+
+
+                // Verificar si se envio el correo
+                $email->send();
+                header("Location: login.php");
+            
+                    
+            } catch (Exception $error) {
+                //throw $th;
+                echo "ERROR AL ENVIAR EL EMAIL => ". $error->getMessage();
+            
+                exit();
+            }
+
+        } else {
+            
+            echo `<script>
+                    swal.fire({
+                        title: "Error",
+                        text: "Parece que no estas registrado en el sistema, por favor verifica tu correo electrónico o regístrate si no lo has hecho.",
+                        icon: "error",
+                        confirmButtonText: "Aceptar"
+                    });
+                </script>`;
+            
+        }
+    }
+
+    if (isset($_POST["changePassword"])) {
+
+        $clave = $_POST["clave"];
+        $confirmarClave = $_POST["claveConfirmar"];
+        $token= $_GET['token'];
+
+        
+
+        $consulta_buscar_por_email = "SELECT COUNT(*) AS cantidad FROM usuario WHERE token = ?";
+        $consulta = $conexion->prepare($consulta_buscar_por_email);
+        $consulta->execute([$token]);
+        $resultado = $consulta->fetch(PDO::FETCH_ASSOC);
+        if ($resultado['cantidad'] > 0) {
+            
+            try{
+                $encriptar = password_hash($clave, PASSWORD_DEFAULT);
+                $consulta_cambiar_clave = "UPDATE usuario SET password = ?, token= ? WHERE token = ?";
+                $param = array($encriptar,"", $token);
+                $resul = $conexion->prepare($consulta_cambiar_clave);
+                $resul->execute($param);
+                $valid = $resul->rowCount();
+                header("Location: login.php");
+            } catch (Exception $error) {
+                //throw $th;
+                echo "ERROR AL ENVIAR EL EMAIL => ". $error->getMessage();
+            
+                exit();
+            }
+        } else {
+            
+            echo `<script>
+                    swal.fire({
+                        title: "Error",
+                        text: "Parece que no estas registrado en el sistema, por favor verifica tu correo electrónico o regístrate si no lo has hecho.",
+                        icon: "error",
+                        confirmButtonText: "Aceptar"
+                    });
+                </script>`;
+            
+        }
+    }
+
     //
     if (isset($_POST["session"])) {
         //
@@ -515,6 +644,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         position: absolute;
         z-index: -1;
     }
+    .card-forgot-password {
+        transform: translateY(calc(-100% + 100vh));
+        opacity: 0;
+        position: absolute;
+        z-index: -1;
+    }
+    .card-change-password {
+        transform: translateY(calc(-100% + 100vh));
+        opacity: 0;
+        position: absolute;
+        z-index: -1;
+    }
     /* Botón de cambio */
     .toggle-button {
         background-color: #8b5bff;
@@ -545,10 +686,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <button class="w-100 btn btn-lg btn btn-outline-primary btn-glow" type="submit" name="session">Iniciar Sesión</button>
         </form>
         <hr>
+        <p><a href="#" onclick="toggleForm('forgot-password')">Olvidaste tu contraseña?</a></p> 
         <p style="text-align:right">Necesitas una cuenta?</p>
         <button class="toggle-button btn-glow-2" onclick="toggleForm('register')">Registrate</button>
     </div>
-
     <div class="card card-register">
         <h2 class="text-center">Registrarse</h2>
             <form action="#" method="POST" enctype="multipart/form-data" class="form-register">
@@ -596,12 +737,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </form>
         <button class="toggle-button btn-glow-2" onclick="toggleForm('login')">Volver a Iniciar Sesión</button>
     </div>
+    <div class="card card-forgot-password">
+        <h2 class="text-center">Cambiar contraseña</h2>
+        <form action="#" method="POST">
+            <p>Recuerda que enviaremos un correo de verificación si tu correo existe en nuestra base de datos</p>
+            <!-- Campos de inicio de sesión -->
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" name="correo" id="correo" placeholder="name@example.com">
+                <label for="correo">Correo</label>
+            </div>
+            <button class="w-100 btn btn-lg btn btn-outline-primary btn-glow" type="submit" name="forgotPassword">Envíame el correo</button>
+        </form>
+        <hr>
+        <p style="text-align:right">Necesitas una cuenta?</p>
+        <button class="toggle-button btn-glow-2" onclick="toggleForm('login')">Registrate</button>
+    </div>
+    <div class="card card-change-password">
+        <h2 class="text-center">Cambiar contraseña</h2>
+        <form action="#" method="POST" id="changePasswordForm">
+            <!-- Campos de inicio de sesión -->
+            <div class="mb-3">
+                <label for="clave" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" name="clave" id="clave" placeholder="Clave">
+            </div>
+            <div class="mb-3">
+                <label for="claveConfirmar" class="form-label">Confirmar contraseña</label>
+                <input type="password" class="form-control" name="claveConfirmar" id="claveConfirmar" placeholder="confirmar clave">
+            </div>
+            <button class="w-100 btn btn-lg btn btn-outline-primary btn-glow" type="submit" name="changePassword">Cambiar contraseña</button>
+        </form>
+        <hr>
+        <p style="text-align:right">Necesitas una cuenta?</p>
+        <button class="toggle-button btn-glow-2" onclick="toggleForm('login')">Registrate</button>
+    </div>
 </div>
 
 <script>
+    var urlParams = new URLSearchParams(window.location.search);
+    let changePassword = urlParams.get('changePassword');
+    let token = urlParams.get('token');
+
+    if(changePassword){
+        toggleForm('change-password');
+    }
+    if(token){
+        document.getElementById('changePasswordForm').action = `?changePassword=true&token=${token}`;
+    }
     function toggleForm (tipo) {
         const cardLogin = document.querySelector('.card-login');
         const cardRegister = document.querySelector('.card-register');
+        const cardForgotPassword = document.querySelector('.card-forgot-password');
+        const cardChangePassword = document.querySelector('.card-change-password'); // Nueva tarjeta para el cambio de contraseña
 
         if (tipo === "register") {
             cardLogin.style.opacity = "0";
@@ -611,7 +797,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 cardRegister.style.transform = "translateY(0)";
                 cardRegister.style.zIndex = "1";
                 cardLogin.style.zIndex = "-1";
-            }, 300); // ajusta el tiempo de espera según la duración de la transición CSS
+            }, 300);
         } else if (tipo === "login") {
             cardLogin.style.opacity = "1";
             cardRegister.style.opacity = "0";
@@ -620,9 +806,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 cardRegister.style.transform = "translateY(calc(100% + 100vh))";
                 cardRegister.style.zIndex = "-1";
                 cardLogin.style.zIndex = "1";
-            }, 300); // ajusta el tiempo de espera según la duración de la transición CSS
+            }, 300);
+        } else if (tipo === "forgot-password") {
+            cardLogin.style.opacity = "0";
+            cardForgotPassword.style.opacity = "1";
+            setTimeout(() => {
+                cardLogin.style.transform = "translateY(-100%)";
+                cardForgotPassword.style.transform = "translateY(0)";
+                cardForgotPassword.style.zIndex = "1";
+                cardLogin.style.zIndex = "-1";
+            }, 300);
+        } else if (tipo === "change-password") { // Mostrar la tarjeta de cambio de contraseña
+            cardLogin.style.opacity = "0";
+            cardChangePassword.style.opacity = "1";
+            setTimeout(() => {
+                cardLogin.style.transform = "translateY(-100%)";
+                cardChangePassword.style.transform = "translateY(0)";
+                cardChangePassword.style.zIndex = "1";
+                cardLogin.style.zIndex = "-1";
+            }, 300);
         }
-        
     }
 </script>
 
